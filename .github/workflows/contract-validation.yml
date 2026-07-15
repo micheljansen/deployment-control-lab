@@ -1,0 +1,21 @@
+name: Contract validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test public lab contracts
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out controls
+        uses: actions/checkout@v4
+
+      - name: Run behavior, safety, and anonymity tests
+        run: python3 -m unittest discover -s tests -v
