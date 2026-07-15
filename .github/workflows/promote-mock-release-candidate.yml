@@ -1,0 +1,85 @@
+name: Promote mock release candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Native GitHub Environment approval gate
+        required: true
+        type: choice
+        options:
+          - test
+          - uat
+          - production
+      operation:
+        description: Ordered promotion or rollback
+        required: true
+        default: promote
+        type: choice
+        options:
+          - promote
+          - rollback
+      digest:
+        description: Synthetic digest from the release-candidate manifest
+        required: true
+        type: string
+      source_sha:
+        description: Source identity from the same manifest
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deployment-control-lab-state
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    name: ${{ inputs.operation }} synthetic digest in ${{ inputs.environment }}
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Check out controls
+        uses: actions/checkout@v4
+
+      - name: Check out synthetic state
+        uses: actions/checkout@v4
+        with:
+          ref: lab-state
+          path: lab-state
+
+      - name: Apply mock transition after approval
+        env:
+          TARGET_ENVIRONMENT: ${{ inputs.environment }}
+          OPERATION: ${{ inputs.operation }}
+          DIGEST: ${{ inputs.digest }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          mkdir -p outputs
+          python3 scripts/lab.py \
+            --state lab-state/state/lab-state.json \
+            promote \
+            --environment "${TARGET_ENVIRONMENT}" \
+            --operation "${OPERATION}" \
+            --digest "${DIGEST}" \
+            --source-sha "${SOURCE_SHA}" \
+            --output outputs/environment-record.json
+
+      - name: Persist mock environment state
+        working-directory: lab-state
+        run: |
+          git config user.email "automation@example.invalid"
+          git config user.name "Deployment Control Lab"
+          git add state/lab-state.json
+          git commit -m "lab: record approved mock environment transition"
+          git push origin HEAD:lab-state
+
+      - name: Upload approval result
+        uses: actions/upload-artifact@v4
+        with:
+          name: mock-environment-record
+          path: outputs/environment-record.json
+          retention-days: 30

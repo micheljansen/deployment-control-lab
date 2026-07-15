@@ -1,0 +1,58 @@
+name: Build mock release candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Arbitrary 40-character hexadecimal source identity
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deployment-control-lab-state
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Register synthetic release candidate
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out controls
+        uses: actions/checkout@v4
+
+      - name: Check out synthetic state
+        uses: actions/checkout@v4
+        with:
+          ref: lab-state
+          path: lab-state
+
+      - name: Create manifest without building an image
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          mkdir -p outputs
+          python3 scripts/lab.py \
+            --state lab-state/state/lab-state.json \
+            build \
+            --source-sha "${SOURCE_SHA}" \
+            --output outputs/release-candidate.json
+
+      - name: Persist synthetic registry
+        working-directory: lab-state
+        run: |
+          git config user.email "automation@example.invalid"
+          git config user.name "Deployment Control Lab"
+          git add state/lab-state.json
+          git commit -m "lab: register synthetic release candidate"
+          git push origin HEAD:lab-state
+
+      - name: Upload release identity
+        uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-release-candidate
+          path: outputs/release-candidate.json
+          retention-days: 30
