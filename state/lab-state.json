@@ -6,9 +6,17 @@
       "sourceSha": null
     },
     "test": {
-      "digest": null,
-      "history": [],
-      "sourceSha": null
+      "digest": "sha256:2fb4ce038343a5cc1fd635d21263292079c07eb6cefa72aebc9f19f8f7e5bfb7",
+      "history": [
+        {
+          "digest": "sha256:2fb4ce038343a5cc1fd635d21263292079c07eb6cefa72aebc9f19f8f7e5bfb7",
+          "environment": "test",
+          "operation": "promote",
+          "recordedAt": "2026-07-15T15:01:29Z",
+          "sourceSha": "dddddddddddddddddddddddddddddddddddddddd"
+        }
+      ],
+      "sourceSha": "dddddddddddddddddddddddddddddddddddddddd"
     },
     "uat": {
       "digest": null,
