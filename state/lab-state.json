@@ -6,7 +6,7 @@
       "sourceSha": null
     },
     "test": {
-      "digest": "sha256:2fb4ce038343a5cc1fd635d21263292079c07eb6cefa72aebc9f19f8f7e5bfb7",
+      "digest": "sha256:982ef79ceb3bf651acdd8f34662b6605ae6292c1f35c69b7812844ead9bb0f5d",
       "history": [
         {
           "digest": "sha256:2fb4ce038343a5cc1fd635d21263292079c07eb6cefa72aebc9f19f8f7e5bfb7",
@@ -14,9 +14,16 @@
           "operation": "promote",
           "recordedAt": "2026-07-15T15:01:29Z",
           "sourceSha": "dddddddddddddddddddddddddddddddddddddddd"
+        },
+        {
+          "digest": "sha256:982ef79ceb3bf651acdd8f34662b6605ae6292c1f35c69b7812844ead9bb0f5d",
+          "environment": "test",
+          "operation": "promote",
+          "recordedAt": "2026-08-03T12:42:45Z",
+          "sourceSha": "9753e845a8a91de8db3ef5be568cb2db492cf25e"
         }
       ],
-      "sourceSha": "dddddddddddddddddddddddddddddddddddddddd"
+      "sourceSha": "9753e845a8a91de8db3ef5be568cb2db492cf25e"
     },
     "uat": {
       "digest": null,
